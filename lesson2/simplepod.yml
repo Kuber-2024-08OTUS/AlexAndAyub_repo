@@ -12,7 +12,7 @@ spec:
     command:
       - /bin/sh
       - -c
-      - "echo 'Wy k3s by MinkovAV' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
+      - "echo 'My k3s by MinkovAV' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
     resources:
       limits:
         cpu: 200m
