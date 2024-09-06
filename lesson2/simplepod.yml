@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-app
+  namespace: default
+  labels:
+    app: web-app
+spec:
+  containers:
+  - name: web-app
+    image: nginx
+    command:
+      - /bin/sh
+      - -c
+      - "echo 'Wy k3s by MinkovAV' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
+    resources:
+      limits:
+        cpu: 200m
+        memory: 300Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+  
