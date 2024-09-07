@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: nginx-config
   namespace: homework
+  labels:
+    les: kubernetes-intro
 data:
   nginx.conf: |
     events {}
@@ -25,6 +27,7 @@ metadata:
   namespace: homework
   labels:
     name: mypod
+    les: kubernetes-intro
 spec:
   volumes:
     - name: shared-volume
@@ -70,6 +73,8 @@ kind: Service
 metadata:
   name: srv-mypod
   namespace: homework
+  labels:
+    les: kubernetes-intro
 spec:
   selector:
     name: mypod
@@ -84,6 +89,8 @@ kind: Ingress
 metadata:
   name: traefik-ingress
   namespace: homework
+  labels:
+    les: kubernetes-intro
 spec:
   ingressClassName: traefik
   rules:
