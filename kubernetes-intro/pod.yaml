@@ -1,4 +1,24 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: homework
+data:
+  nginx.conf: |
+    events {}
+    http {
+      server {
+          listen 8000;
+          root /homework;
+
+          location / {
+            autoindex on;
+          }
+      }
+    }
+---
+
+apiVersion: v1
 kind: Pod
 metadata:
   name: mypod
@@ -9,6 +29,9 @@ spec:
   volumes:
     - name: shared-volume
       emptyDir: {}
+    - name: nginx-config-volume
+      configMap:
+        name: nginx-config
   initContainers:
     - name: init-container
       image: busybox
@@ -29,6 +52,9 @@ spec:
       volumeMounts:
         - name: shared-volume
           mountPath: /homework
+        - name: nginx-config-volume
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
       lifecycle:
         preStop:
           exec:
@@ -37,4 +63,37 @@ spec:
               - -c
               - |
                 rm -f /homework/index.html
+---
 
+apiVersion: v1
+kind: Service
+metadata:
+  name: srv-mypod
+  namespace: homework
+spec:
+  selector:
+    name: mypod
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-ingress
+  namespace: homework
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: mypod.my.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: srv-mypod
+                port:
+                  number: 80
