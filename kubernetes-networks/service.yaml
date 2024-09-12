@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: srv-mypod
+  namespace: homework
+  labels:
+    run: web-server
+spec:
+  type: ClusterIP
+  selector:
+    run: web-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+
