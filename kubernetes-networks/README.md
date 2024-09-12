@@ -1,6 +1,6 @@
 ## Установка ingress-контроллер nginx
 
-k3s нужно сначало установить без traefik-ingress
+k3s нужно сначала установить без traefik-ingress
 ```
 # Disable traefik
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik" sh
