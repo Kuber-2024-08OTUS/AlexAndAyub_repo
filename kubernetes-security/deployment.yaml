@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mypod-deployment
+  labels:
+    app: nginx
+  namespace: homework
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: web-server
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        run: web-server
+    spec:
+      nodeSelector:
+        homework: "true"
+      serviceAccountName: monitoring
+      volumes:
+      - name: shared-volume
+        persistentVolumeClaim:
+          claimName: homework-my-pvc
+      - name: homework-my-configmap
+        configMap:
+          name: homework-my-configmap
+          items:
+            - key: nginx_conf
+              path: nginx.conf
+            - key: index_html
+              path: index.html
+      initContainers:
+        - name: init-container
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+            - |
+              d=$(date +'%Y-%m-%d %H:%M:%S')
+              echo "<html><body><h1>My pod in k3s<br> Created: $d<br> hostname: $(hostname)<br>  </h1></body></html>" >> /init/index.html
+              echo "<html><body><h1> ERROR 404  </h1></body></html>" > /init/err404.html
+              echo "<html><body><h1> ERROR 500  </h1></body></html>" > /init/err500.html
+              wget kube-state-metrics.kube-system:8080/metrics -O /init/metrics.html
+          volumeMounts:
+            - name: shared-volume
+              mountPath: /init
+      containers:
+        - name: web-server
+          image: nginx:alpine
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            exec:
+              command: ["test", "-f", "/homework/index.html"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: shared-volume
+              mountPath: /homework
+            - name: homework-my-configmap
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: homework-my-configmap
+              mountPath: /homework/conf/file/index.html
+              subPath: index.html
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "rm -f /homework/index.html"]
+          resources:
+            requests:
+              memory: "200Mi"
+              cpu: "250m"
+            limits:
+              memory: "400Mi"
+              cpu: "500m"
+
