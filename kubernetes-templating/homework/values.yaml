@@ -1,0 +1,38 @@
+nameSpace: homework
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+app:
+  init: busybox
+  repository: nginx
+  repository_tag: "alpine"
+  replicaCount: 3
+  readinessProbe:
+    enabled: true
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: homework.otus
+      paths:
+        - path: /homepage
+          pathType: ImplementationSpecific
+        - path: /
+          pathType: Prefix
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+mysql:
+  mysqlRootPassword: rootpass
+  mysqlUser: user
+  mysqlPassword: password
+  mysqlDatabase: database
+  

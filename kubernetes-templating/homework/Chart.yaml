@@ -1,0 +1,14 @@
+apiVersion: v2
+name: homework
+description: A Helm chart for homework OTUS
+
+type: application
+
+version: 0.0.1
+
+appVersion: "1.0.0"
+
+dependencies:
+  - name: mysql
+    version: "11.1.17"
+    repository: "https://charts.bitnami.com/bitnami"
