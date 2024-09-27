@@ -1,0 +1,69 @@
+image:
+  tag: latest
+
+broker:
+  replicaCount: 1
+
+listeners:
+  client:
+    protocol: PLAINTEXT
+    name: CLIENT
+  controller:
+    name: CONTROLLER
+    protocol: PLAINTEXT
+  interbroker:
+    protocol: PLAINTEXT
+    name: INTERNAL
+  external:
+    protocol: SASL_PLAINTEXT
+    name: EXTERNAL
+    sslClientAuth: ""
+auth:
+  client:
+    enabled: yes
+
+controller:
+  persistence:
+    size: 2Gi
+  logPersistence:
+    size: 2Gi
+zookeeper:
+  ## @param zookeeper.enabled Switch to enable or disable the ZooKeeper helm chart. Must be false if you use KRaft mode.
+  ##
+  enabled: false
+  ## @param zookeeper.replicaCount Number of ZooKeeper nodes
+  ##
+  replicaCount: 1
+  ## ZooKeeper authentication
+  ##
+  auth:
+    client:
+      ## @param zookeeper.auth.client.enabled Enable ZooKeeper auth
+      ##
+      enabled: false
+      ## @param zookeeper.auth.client.clientUser User that will use ZooKeeper client (zkCli.sh) to authenticate. Must exist in the serverUsers comma-separated list.
+      ##
+      clientUser: ""
+      ## @param zookeeper.auth.client.clientPassword Password that will use ZooKeeper client (zkCli.sh) to authenticate. Must exist in the serverPasswords comma-separated list.
+      ##
+      clientPassword: ""
+      ## @param zookeeper.auth.client.serverUsers Comma, semicolon or whitespace separated list of user to be created. Specify them as a string, for example: "user1,user2,admin"
+      ##
+      serverUsers: ""
+      ## @param zookeeper.auth.client.serverPasswords Comma, semicolon or whitespace separated list of passwords to assign to users when created. Specify them as a string, for example: "pass4user1, pass4user2, pass4admin"
+      ##
+      serverPasswords: ""
+  ## ZooKeeper Persistence parameters
+  ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+  ## @param zookeeper.persistence.enabled Enable persistence on ZooKeeper using PVC(s)
+  ## @param zookeeper.persistence.storageClass Persistent Volume storage class
+  ## @param zookeeper.persistence.accessModes Persistent Volume access modes
+  ## @param zookeeper.persistence.size Persistent Volume size
+  ##
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 2Gi
+

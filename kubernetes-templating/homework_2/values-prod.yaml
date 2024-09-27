@@ -1,0 +1,28 @@
+image:
+  tag: 3.5.2
+
+broker:
+  replicaCount: 5
+
+controller:
+  persistence:
+    size: 2Gi
+  logPersistence:
+    size: 2Gi
+
+zookeeper:
+  enabled: false
+  replicaCount: 1
+  auth:
+    client:
+      enabled: false
+      clientUser: ""
+      clientPassword: ""
+      serverUsers: ""
+      serverPasswords: ""
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 2Gi
