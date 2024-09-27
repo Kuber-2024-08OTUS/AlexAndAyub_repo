@@ -1,0 +1,23 @@
+image:
+  tag: latest
+
+broker:
+  replicaCount: 1
+
+listeners:
+  client:
+    protocol: PLAINTEXT
+    name: CLIENT
+  controller:
+    name: CONTROLLER
+    protocol: PLAINTEXT
+  interbroker:
+    protocol: PLAINTEXT
+    name: INTERNAL
+  external:
+    protocol: SASL_PLAINTEXT
+    name: EXTERNAL
+    sslClientAuth: ""
+auth:
+  client:
+    enabled: yes
