@@ -15,8 +15,12 @@ RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
     && wget https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.39/pcre2-10.39.tar.gz \
     && tar -zxvf pcre2-10.39.tar.gz -C /tmp/ \
     && wget http://zlib.net/fossils/zlib-1.3.tar.gz \
-    && tar -zxvf zlib-1.3.tar.gz -C /tmp/
-
+    && tar -zxvf zlib-1.3.tar.gz -C /tmp/ \
+    && wget https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v1.3.0/nginx-prometheus-exporter_1.3.0_linux_amd64.tar.gz \
+    && tar -zxvf nginx-prometheus-exporter_1.3.0_linux_amd64.tar.gz -C /tmp/\
+    && mv nginx-prometheus-exporter /usr/local/bin/ \
+    && rm nginx-prometheus-exporter_1.3.0_linux_amd64.tar.gz \
+    && chmod +x /usr/local/bin/nginx-prometheus-exporter
 
 RUN apk add --no-cache zlib-dev pcre-dev openssl-dev gd-dev gcc g++ make
 
@@ -67,8 +71,9 @@ RUN apk del \
 USER nginx
 WORKDIR /etc/nginx
 
+EXPOSE 80 443 9113
+
 COPY nginx.conf /etc/nginx/
+COPY exporter.conf /etc/nginx-prometheus-exporter.conf
 
-CMD ["nginx","-g","daemon off;"]
-
-EXPOSE 80 443
+CMD ["sh","-c","nginx & nginx-prometheus-exporter -nginx.scrape-uri=http://localhost:80/stub_status -web.listen-address=:9113"]
