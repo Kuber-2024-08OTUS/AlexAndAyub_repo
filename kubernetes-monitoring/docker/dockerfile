@@ -1,0 +1,79 @@
+ARG ARG_NGINX_VERSION=1.27.1
+
+FROM alpine:latest AS build-stage
+
+ARG ARG_NGINX_VERSION
+ENV NGINX_VERSION=$ARG_NGINX_VERSION
+
+RUN apk add wget git tar
+
+WORKDIR /tmp
+
+RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
+    && mkdir /tmp/nginx /var/log/nginx \
+    && tar -zxvf nginx-${NGINX_VERSION}.tar.gz -C /tmp/nginx --strip-components=1 \
+    && wget https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.39/pcre2-10.39.tar.gz \
+    && tar -zxvf pcre2-10.39.tar.gz -C /tmp/ \
+    && wget http://zlib.net/fossils/zlib-1.3.tar.gz \
+    && tar -zxvf zlib-1.3.tar.gz -C /tmp/ \
+    && wget https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v1.3.0/nginx-prometheus-exporter_1.3.0_linux_amd64.tar.gz \
+    && tar -zxvf nginx-prometheus-exporter_1.3.0_linux_amd64.tar.gz -C /tmp/\
+    && mv nginx-prometheus-exporter /usr/local/bin/ \
+    && rm nginx-prometheus-exporter_1.3.0_linux_amd64.tar.gz \
+    && chmod +x /usr/local/bin/nginx-prometheus-exporter
+
+RUN apk add --no-cache zlib-dev pcre-dev openssl-dev gd-dev gcc g++ make
+
+WORKDIR /tmp/nginx
+
+RUN ./configure \
+      --user=nginx \
+      --group=nginx \
+      --sbin-path=/usr/sbin/nginx \
+      --conf-path=/etc/nginx/nginx.conf \
+      --error-log-path=/dev/stdout \
+      --http-log-path=/dev/stdout \
+      --pid-path=/run/nginx.pid \
+      --lock-path=/run/lock/subsys/nginx \
+      #--prefix=/usr/share/nginx
+      --http-client-body-temp-path=/tmp/client_body_temp \
+      --http-proxy-temp-path=/tmp/proxy_temp \
+      --http-fastcgi-temp-path=/tmp/fastcgi_temp \
+      --http-scgi-temp-path=/tmp/scgi_temp \
+      --http-uwsgi-temp-path=/tmp/uwsgi_temp\
+      --with-http_ssl_module \
+      --with-http_stub_status_module \
+      --with-pcre=../pcre2-10.39 \
+      --with-zlib=../zlib-1.3 \
+    && make \
+    && make install
+
+WORKDIR /tmp
+
+RUN addgroup -g 1001 -S nginx \
+    && adduser -D -S -G nginx nginx \
+    && touch /run/nginx.pid \
+    && chown nginx:nginx \
+      /etc/nginx \
+      /usr/local/nginx/ \
+      /etc/nginx/nginx.conf \
+      /var/log/nginx \
+      /run/nginx.pid
+
+RUN apk del \
+        wget \
+        tar \
+        gcc \
+        make \
+        git \
+    && rm -rf /tmp/*
+
+USER nginx
+WORKDIR /etc/nginx
+
+EXPOSE 80 443 9113
+
+COPY nginx.conf /etc/nginx/
+COPY exporter.conf /etc/nginx-prometheus-exporter.conf
+
+CMD ["sh","-c","nginx & nginx-prometheus-exporter -nginx.scrape-uri=http://localhost:80/stub_status -web.listen-address=:9113"]
