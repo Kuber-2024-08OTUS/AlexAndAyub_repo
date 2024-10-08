@@ -1,0 +1,8 @@
+#cloud-config
+users:
+  - name: avminkov
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDTRbcKj6lR9ePgmRj2nZz+JyNG2f9cWefrQCNW3O2vKCESyPRW9DVddyKZl8cGBdJGq9YTVij5zcL4qgBMNEd5hnOUBN+GBFiQ79oWuVHgc94J8xpQXOapRhz+W6UiMfdrrs5d/ICfqgQQ3x+eeKlxJ5F0OZiWctZFoLZ19U1UeceXaozC31D4KHKDlACV9c0aF6ynD6VGwlK5662lYtzzVTHwcR3trpbCIBPI1IG3eLYgz03Stb8aEt9/rrXX+Z36oSq2ei11QQrMjyGDTyCBqtC12fDb8k3VCn7PEy59ZmSNIGrr79ktx2BchsZ6Z8vCn3qath38s6gFx/tug3GmIHoOUvdfmgIe0QIAvW02kue0kZaxYpStD+TP1x4V9Ve1hcaZ1rnitXcN94+X+dX5S8z0iguNH7fvqkiCPDmpB2GEGp67kTbuGJDUQOpEneFJm1jQgUJ4a05tDa6Rb4ldayu50LvgwM9jXFeU17kRAYwhze3Pn1t8cg3wTwbliOyowE1m6G7HfBfhBa3c7VwbBxXzvHjPE7jBrx1sjZCFSriptM32pSPsRa2LtOKTANaohcTZ3aC3Zn4Mbp/9xIYV5QPv0hiqMMfpgB91ZHwewkmrIXibQhXU1kGuTVbMjqnmpd8Ip+eFG/q2OhssD9Hphk6qj5ohfuSWj4vZJnIYow== a3403705@ya.ru
