@@ -1,4 +1,4 @@
-```
+B```
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
 wget https://hashicorp-releases.yandexcloud.net/terraform/1.9.7/terraform_1.9.7_linux_amd64.zip
@@ -34,3 +34,18 @@ yc resource-manager folder create --name new-folder --description "my first fold
 ```
 yc managed-kubernetes cluster get-credentials k8scluster --external --folder-name otus
 ```
+
+```
+taint node cl1rpjcg3c9585j4r1e1-onad node-role=infra:NoSchedule
+
+taint node cl1ifdbc7udsj6khn8sj-oqux node-role=infra:NoSchedule
+```
+
+```
+helm install \
+  --namespace <пространство_имен> \
+  --create-namespace \
+  --set loki-distributed.loki.storageConfig.aws.bucketnames=loki \
+  --set loki-distributed.serviceaccountawskeyvalue_generated.accessKeyID= \
+  --set loki-distributed.serviceaccountawskeyvalue_generated.secretAccessKey= \
+  loki ./loki/

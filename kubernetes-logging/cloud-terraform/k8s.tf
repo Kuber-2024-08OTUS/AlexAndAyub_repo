@@ -255,3 +255,20 @@ resource "yandex_storage_bucket" "otus" {
     "otus_test" = "test"
   }
 }
+
+// Creating a bucket using a key
+resource "yandex_storage_bucket" "loki" {
+  access_key            = yandex_iam_service_account_static_access_key.sa-static-key.access_key
+  secret_key            = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
+  bucket                = "loki"
+  max_size              = 2147483648
+  default_storage_class = "standard"
+  anonymous_access_flags {
+    read        = true
+    list        = true
+    config_read = true
+  }
+  tags = {
+    "otus_loki" = "loki"
+  }
+}
