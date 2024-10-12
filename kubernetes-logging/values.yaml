@@ -2,6 +2,8 @@
 # helm uninstall loki --namespace=loki
 loki:
   auth_enabled: false
+  commonConfig:
+    replication_factor: 1
   schemaConfig:
     configs:
       - from: 2024-04-01
@@ -25,7 +27,11 @@ loki:
       admin: "otus-admin"
     s3:
       # s3 URL can be used to specify the endpoint, access key, secret key, and bucket name
-      s3: s3://YCAJE*************xBRdB:YCP0*****************pgAk8X@storage.yandexcloud.net/loki
+      s3: https://storage.yandexcloud.net/
+      bucketnames: loki
+      region: ru-central1-a
+      access_key_id: YCAJ*******************BRdB
+      secret_access_key: d47Ty8****************k8X
       http_config: {}
 deploymentMode: Distributed
 # Disable minio storage
