@@ -1,0 +1,14 @@
+# helm upgrade --values values-promtail.yaml --install promtail grafana/promtail --namespace=loki
+# helm uninstall promtail --namespace=loki
+
+config:
+# publish data to loki
+  clients:
+    - url: http://loki-gateway.loki.svc.cluster.local/loki/api/v1/push
+      tenant_id: 1
+
+tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"

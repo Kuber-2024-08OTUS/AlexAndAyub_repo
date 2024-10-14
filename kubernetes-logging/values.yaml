@@ -1,0 +1,152 @@
+# helm install loki grafana/loki --values values.yaml --namespace=loki
+# helm uninstall loki --namespace=loki
+loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1
+  schemaConfig:
+    configs:
+      - from: 2024-04-01
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+  ingester:
+    chunk_encoding: snappy
+  tracing:
+    enabled: true
+  querier:
+    max_concurrent: 4
+  storage:
+    type: s3
+    bucketNames:
+      chunks: "otus-chunks"
+      ruler: "otus-ruler"
+      admin: "otus-admin"
+    s3:
+      # s3 URL can be used to specify the endpoint, access key, secret key, and bucket name
+      s3: https://storage.yandexcloud.net/
+      bucketnames: loki
+      region: ru-central1-a
+      access_key_id: YCAJ*******************BRdB
+      secret_access_key: d47Ty8****************k8X
+      http_config: {}
+deploymentMode: Distributed
+# Disable minio storage
+minio:
+    enabled: false
+ingester:
+  replicas: 1
+  zoneAwareReplication:
+    enabled: false
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
+querier:
+  replicas: 1
+  maxUnavailable: 1
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
+queryFrontend:
+  replicas: 1
+  maxUnavailable: 1
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
+queryScheduler:
+  replicas: 1
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
+distributor:
+  replicas: 1
+  maxUnavailable: 1
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
+compactor:
+  replicas: 1
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
+indexGateway:
+  replicas: 1
+  maxUnavailable: 1
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
+bloomCompactor:
+  replicas: 0
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
+bloomGateway:
+  replicas: 0
+backend:
+  replicas: 0
+read:
+  replicas: 0
+write:
+  replicas: 0
+singleBinary:
+  replicas: 0
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: node-role
+          operator: In
+          values:
+          - infra
+lokiCanary:
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
+gateway:
+  tolerations:
+    - key: "node-role"
+      operator: "Equal"
+      value: "infra"
+      effect: "NoSchedule"
+  nodeSelector:
+    node-role: "infra"
