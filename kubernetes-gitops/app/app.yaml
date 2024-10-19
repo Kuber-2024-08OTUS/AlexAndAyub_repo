@@ -16,9 +16,9 @@ spec:
     targetRevision: kubernetes-gitops
     helm:
       valueFiles:
-      - values_prod.yaml
+      - values.yaml
 
-  project: default
+  project: otus
   syncPolicy:
     automated:
       prune   : true
