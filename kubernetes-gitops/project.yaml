@@ -2,13 +2,13 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name     : myapp1
-  namespace: oyus
+  namespace: otus
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     name     : in-cluster
-    namespace: app1
+    namespace: otus
   source:
     path   : "kubernetes-gitops"
     repoURL: "git@github.com:Kuber-2024-08OTUS/AlexAndAyub_repo.git"
