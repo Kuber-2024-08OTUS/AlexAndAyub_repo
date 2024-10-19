@@ -8,7 +8,7 @@ metadata:
 spec:
   destination:
     namespace: otus
-    name: test-home-work
+    name: in-cluster
   project: default
   source:
     path: kubernetes-gitops/HelmCharts/MyChart1
