@@ -4,9 +4,9 @@ metadata:
   name: root
 spec:
   destination:
-    name: ''
-    namespace: otus
-    server: https://kubernetes.default.svc
+    name: 'in-cluster'
+    namespace: argocd
+#    server: https://kubernetes.default.svc
   source:
     path: kubernetes-gitops/app
     repoURL: git@github.com:Kuber-2024-08OTUS/AlexAndAyub_repo.git
