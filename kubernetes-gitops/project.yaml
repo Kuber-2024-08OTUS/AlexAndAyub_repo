@@ -1,30 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name     : myapp1
-  namespace: otus
-  finalizers:
-  - resources-finalizer.argocd.argoproj.io
+  name: root
 spec:
   destination:
-    name     : in-cluster
+    name: ''
     namespace: otus
+    server: https://kubernetes.default.svc
   source:
-    path   : "kubernetes-gitops"
-    repoURL: "git@github.com:Kuber-2024-08OTUS/AlexAndAyub_repo.git"
+    path: kubernetes-gitops/app
+    repoURL: git@github.com:Kuber-2024-08OTUS/AlexAndAyub_repo.git
     targetRevision: kubernetes-gitops
-    helm:
-      valueFiles:
-      - values_dev.yaml
-      parameters:
-      - name: "container.image"
-        value: hello-world
-
-  project: default
+  sources: []
+  project: otus
   syncPolicy:
     automated:
-      prune   : true
-      selfHeal: true
+      prune: false
+      selfHeal: false
     syncOptions:
-      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
 
