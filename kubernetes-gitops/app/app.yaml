@@ -5,8 +5,8 @@ metadata:
   namespace: otus
 spec:
   destination:
-    namespace: default
-    name: i-dont-exist
+    namespace: otus
+    name: test-home-work
   project: default
   source:
     path: helm-guestbook
