@@ -9,6 +9,6 @@ spec:
     name: test-home-work
   project: default
   source:
-    path: helm-guestbook
-    repoURL: https://github.com/argoproj/argocd-example-apps
+    path: kubernetes-gitops/HelmCharts/MyChart1
+    repoURL: git@github.com:Kuber-2024-08OTUS/AlexAndAyub_repo.git
     targetRevision: HEAD
