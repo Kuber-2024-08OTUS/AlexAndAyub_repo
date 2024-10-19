@@ -2,7 +2,9 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: test
-  namespace: otus
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     namespace: otus
@@ -11,4 +13,15 @@ spec:
   source:
     path: kubernetes-gitops/HelmCharts/MyChart1
     repoURL: git@github.com:Kuber-2024-08OTUS/AlexAndAyub_repo.git
-    targetRevision: HEAD
+    targetRevision: kubernetes-gitops
+    helm:
+      valueFiles:
+      - values_prod.yaml
+
+  project: default
+  syncPolicy:
+    automated:
+      prune   : true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
