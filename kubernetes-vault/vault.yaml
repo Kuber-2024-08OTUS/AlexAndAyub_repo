@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: vault
+    name: in-cluster
+  project: default
+  source:
+    path: HelmCharts/vault
+    repoURL: git@192.168.0.42:minkovav/argocd.git
+    targetRevision: master                            #Ветка
+    helm:
+      valueFiles:
+        - vault-values.yaml
+  project: home
+  syncPolicy:
+    automated:
+      prune   : true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+  - group: admissionregistration.k8s.io
+    kind: MutatingWebhookConfiguration
+    jqPathExpressions:
+    - .webhooks[]?.clientConfig.caBundle
