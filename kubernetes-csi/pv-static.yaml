@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: s3-volume
+spec:
+  storageClassName: csi-s3
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  claimRef:
+    namespace: default
+    name: csi-s3-pvc-static
+  csi:
+    driver: ru.yandex.s3.csi
+    volumeHandle: "otus3"
+    controllerPublishSecretRef:
+      name: csi-s3-secret
+      namespace: kube-system
+    nodePublishSecretRef:
+      name: csi-s3-secret
+      namespace: kube-system
+    nodeStageSecretRef:
+      name: csi-s3-secret
+      namespace: kube-system
+    volumeAttributes:
+      capacity: 2Gi
+      mounter: geesefs
+      options: "--memory-limit=1000 --dir-mode=0777 --file-mode=0666 --uid=1001"
