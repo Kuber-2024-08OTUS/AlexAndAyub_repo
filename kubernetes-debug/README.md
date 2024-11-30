@@ -1,15 +1,23 @@
-kubectl debug -it nginx-distroless-pod --image=nicolaka/netshoot --share-processes --target=nginx-distroless-container -- /bin/sh
+Запуск эфимерного контейнера (ephemeral debug container)
+```
+# kubectl debug -it nginx-distroless-pod --image=nicolaka/netshoot --share-processes --target=nginx-distroless-container -- /bin/sh
+```
 
 -------
-/ # ps -a
+Вывод процессов в эфимерном контейнере
+```
+# ps -a
 PID   USER     TIME  COMMAND
     1 root      0:00 nginx: master process nginx -g daemon off;
     7 101       0:00 nginx: worker process
     8 root      0:00 /bin/sh
    14 root      0:00 ps -a
-
+```
 -------
-># ls -la /proc/1/root/etc/nginx/
+
+Вывод файлов целевого контейнера из эфимерного
+```
+# ls -la /proc/1/root/etc/nginx/
 total 48
 drwxr-xr-x    3 root     root          4096 Oct  5  2020 .
 drwxr-xr-x    1 root     root          4096 Nov 30 12:46 ..
@@ -23,9 +31,12 @@ lrwxrwxrwx    1 root     root            22 Apr 21  2020 modules -> /usr/lib/ngi
 -rw-r--r--    1 root     root           636 Apr 21  2020 scgi_params
 -rw-r--r--    1 root     root           664 Apr 21  2020 uwsgi_params
 -rw-r--r--    1 root     root          3610 Apr 21  2020 win-utf
-
+```
 -------
-cat /proc/1/root/etc/nginx/nginx.conf
+
+Вывод Конфигурации Nginx из целевого контейнера
+```
+# cat /proc/1/root/etc/nginx/nginx.conf
 
 user  nginx;
 worker_processes  1;
@@ -58,9 +69,14 @@ http {
 
     include /etc/nginx/conf.d/*.conf;
 }
-
+```
 ------
-~ # tcpdump -nn -i any -e port 80
+Мониторинг трафика целевого контейноа
+
+```
+# kubectl debug -it nginx-distroless-pod --image=nicolaka/netshoot --share-processes --target=nginx-distroless-container -- /bin/sh
+
+# tcpdump -nn -i any -e port 80
 tcpdump: data link type LINUX_SLL2
 tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
 listening on any, link-type LINUX_SLL2 (Linux cooked v2), snapshot length 262144 bytes
@@ -78,15 +94,21 @@ listening on any, link-type LINUX_SLL2 (Linux cooked v2), snapshot length 262144
 10 packets captured
 10 packets received by filter
 0 packets dropped by kernel
-
+```
 ------
+Нода на котой развёрнут Pod
+```
 kubectl get pod nginx-distroless-pod -o jsonpath='{.spec.nodeName}'
-
+```
 ------
+Эфимерный контейнер для ноды
+```
 kubectl debug node/k3s -it --image=busybox -- /bin/sh
-
+```
 ------
-/ # ls -la /host/root/lessons/kube-state-metrics/
+Файловая система ноды
+```
+# ls -la /host/root/lessons/kube-state-metrics/
 total 264
 drwxr-xr-x   13 root     root          4096 Sep 20 11:40 .
 drwxr-xr-x    8 root     root          4096 Oct 11 11:15 ..
@@ -124,9 +146,11 @@ drwxr-xr-x   18 root     root          4096 Sep 20 11:40 pkg
 drwxr-xr-x    2 root     root          4096 Sep 20 11:40 scripts
 drwxr-xr-x    6 root     root          4096 Sep 20 11:40 tests
 drwxr-xr-x    2 root     root          4096 Sep 20 11:40 tools
-
+```
 -------
-/ # ls -la /host/var/log/containers/nginx-distroless-pod_default_nginx-distroless-container-3e93df68e448b56301a4a11740fdc47420ce73e63095554ce6d382335985cc69.log
+Логи которые распологаются на ноде целевого контейнера из эфимерного
+```
+# ls -la /host/var/log/containers/nginx-distroless-pod_default_nginx-distroless-container-3e93df68e448b56301a4a11740fdc47420ce73e63095554ce6d382335985cc69.log
 lrwxrwxrwx    1 root     root           112 Nov 30 12:46 /host/var/log/containers/nginx-distroless-pod_default_nginx-distroless-container-3e93df68e448b56301a4a11740fdc47420ce73e63095554ce6d382335985cc69.log -> /var/log/pods/default_nginx-distroless-pod_b07e18d5-8eae-41d7-8e1f-c329a23fb801/nginx-distroless-container/0.log
 
 / # cat /host/var/log/pods/default_nginx-distroless-pod_b07e18d5-8eae-41d7-8e1f-c329a23fb801/nginx-distroless-container/0.log
@@ -134,9 +158,11 @@ lrwxrwxrwx    1 root     root           112 Nov 30 12:46 /host/var/log/container
 2024-11-30T12:57:27.641491692Z stderr F 2024/11/30 20:57:27 [error] 7#7: *1 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 10.42.0.185, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "nd.homework.otus", referrer: "http://nd.homework.otus/"
 2024-11-30T12:57:27.641527192Z stdout F 10.42.0.185 - - [30/Nov/2024:20:57:27 +0800] "GET /favicon.ico HTTP/1.1" 404 153 "http://nd.homework.otus/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0" "10.42.0.1"
 2024-11-30T13:24:08.374861447Z stdout F 10.42.0.185 - - [30/Nov/2024:21:24:08 +0800] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0" "10.42.0.1"
-
+```
 
 -------
+Трасеровка процесса
+```
 echo 0 > /proc/sys/kernel/yama/ptrace_scope
 
 kubectl debug -it nginx-distroless-pod --image=nicolaka/netshoot --share-processes --target=nginx-distroless-container -- /bin/sh
@@ -153,4 +179,4 @@ PID   USER     TIME  COMMAND
 ~ # strace -p 1
 strace: Process 1 attached
 rt_sigsuspend([], 8
-
+```
