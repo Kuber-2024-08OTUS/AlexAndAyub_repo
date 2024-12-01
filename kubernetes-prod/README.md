@@ -48,7 +48,7 @@ apt-get update
 apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubeadm
 
-kubeadm init --service-dns-domain=otusminkov.ru --upload-certs
+kubeadm init --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12 --service-dns-domain=otusminkov.ru --upload-certs
 
 
 mkdir -p $HOME/.kube
